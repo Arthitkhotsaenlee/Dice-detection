@@ -12,6 +12,7 @@ cap = cv2.VideoCapture(0)
 
 model = YOLO("runs/detect/train/weights/best.pt")
 classes = ['1','2','3','4','5','6']
+cri_conf = 0.3 # the confidence ceriteria
 
 while True:
     suc, img = cap.read()
@@ -22,7 +23,7 @@ while True:
         for result in results:
             boxes = result.boxes
             for box in boxes:
-                if box and math.ceil((box.conf[0]*1000))/1000 > 0.4:
+                if box and math.ceil((box.conf[0]*1000))/1000 > cri_conf:
                     cls = classes[int(box.cls[0])]
                     dices_val.append(int(cls))
                     conf =  math.ceil((box.conf[0]*1000))/1000
@@ -32,9 +33,10 @@ while True:
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     # cal with and high
                     w, h = x2-x1, y2-y1 
-                    cvzone.cornerRect(img, (x1, y1, w, h)) 
-        avg_result = np.array(total_conf).mean()
-        if len(dices_val) ==3 and avg_result > 0.3:
+                    cvzone.cornerRect(img, (x1, y1, w, h))
+        if len(total_conf)>0:        
+            avg_result = np.array(total_conf).max()
+        if len(dices_val) == 3 and avg_result > cri_conf:
             sum_val = np.array(dices_val).sum()
             if sum_val < 11:
                 sum_label = "LOW"
