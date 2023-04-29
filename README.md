@@ -4,4 +4,4 @@ Most of the project has follow the Murtaza's instruction. Link: (https://www.you
 ## Training the custom model
   - train_Yolo_dices.ipynb
 ## Model imprementation
-  - detective dices
+  - Run main.py to detecting dices in streaming video
