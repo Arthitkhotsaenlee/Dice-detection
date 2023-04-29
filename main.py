@@ -16,9 +16,9 @@ cri_conf = 0.5 # the confidence ceriteria
 
 while True:
     suc, img = cap.read()
-    img_conv = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_conv = cv2.cvtColor(gray,cv2.COLOR_GRAY2RGB)
     if suc:
-        
         results = model(img_conv,stream=True)
         dices_val = []
         total_conf = []
@@ -51,6 +51,7 @@ while True:
             cvzone.putTextRect(img, str(avg_result),(400,100),)
             cvzone.putTextRect(img, str(dices_val),(400,150),)
         cv2.imshow("Dice-detection", img)
+        # cv2.imshow("conver",img_conv)
         # Waits for a user input to quit the application
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
