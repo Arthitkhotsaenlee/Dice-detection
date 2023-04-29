@@ -12,12 +12,14 @@ cap = cv2.VideoCapture(0)
 
 model = YOLO("runs/detect/train/weights/best.pt")
 classes = ['1','2','3','4','5','6']
-cri_conf = 0.3 # the confidence ceriteria
+cri_conf = 0.5 # the confidence ceriteria
 
 while True:
     suc, img = cap.read()
+    img_conv = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     if suc:
-        results = model(img,stream=True)
+        
+        results = model(img_conv,stream=True)
         dices_val = []
         total_conf = []
         for result in results:
@@ -28,12 +30,12 @@ while True:
                     dices_val.append(int(cls))
                     conf =  math.ceil((box.conf[0]*1000))/1000
                     total_conf.append(conf)
-                    print(cls,conf)
                     x1, y1, x2, y2 = box.xyxy[0]
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     # cal with and high
                     w, h = x2-x1, y2-y1 
                     cvzone.cornerRect(img, (x1, y1, w, h))
+                    cvzone.putTextRect(img, f"{cls} {conf}",(max(0,x1),max(0,y1)))
         if len(total_conf)>0:        
             avg_result = np.array(total_conf).max()
         if len(dices_val) == 3 and avg_result > cri_conf:
